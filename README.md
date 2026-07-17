@@ -14,14 +14,14 @@ The crate is `lunartools-rs`; the library is imported as `lunartools`.
 
 ## Quick start
 
-Initialize once with your Client ID (Settings page in the toolbox), then pass the relevant API key per call.
+Create a client, then pass an API key per call. The key is created in the toolbox and identifies both the key and the toolbox it belongs to, so no Client ID is needed.
 
 ```rust
 use lunartools::{LunarTools, OtpOptions};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = LunarTools::new("lt_c0467cf9074b81e3a916178e597c9d0d")?;
+    let client = LunarTools::new()?;
 
     let otp = client
         .otp("lt_ik_...", &OtpOptions::new("softies_archaic_8x@icloud.com").site("nike"))
@@ -142,7 +142,7 @@ match client.otp(api_key, &options).await {
 ```rust
 use std::time::Duration;
 
-let client = LunarTools::builder("lt_...")
+let client = LunarTools::builder()
     .base_url("https://remote.lunaraio.com")
     .timeout(Duration::from_secs(150))
     .build()?;

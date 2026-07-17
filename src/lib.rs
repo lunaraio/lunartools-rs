@@ -14,7 +14,6 @@ pub const DEFAULT_TIMEOUT: Duration = Duration::from_secs(150);
 
 #[derive(Debug, Clone)]
 pub struct LunarTools {
-    client_id: String,
     base_url: String,
     webhook_base_url: String,
     http: reqwest::Client,
@@ -22,7 +21,6 @@ pub struct LunarTools {
 
 #[derive(Debug, Clone)]
 pub struct LunarToolsBuilder {
-    client_id: String,
     base_url: String,
     webhook_base_url: String,
     timeout: Duration,
@@ -51,10 +49,6 @@ impl LunarToolsBuilder {
     }
 
     pub fn build(self) -> Result<LunarTools> {
-        if self.client_id.trim().is_empty() {
-            return Err(LunarToolsError::BadRequest("client_id is required".into()));
-        }
-
         let http = match self.http {
             Some(client) => client,
             None => reqwest::Client::builder()
@@ -64,7 +58,6 @@ impl LunarToolsBuilder {
         };
 
         Ok(LunarTools {
-            client_id: self.client_id,
             base_url: self.base_url.trim_end_matches('/').to_string(),
             webhook_base_url: self.webhook_base_url.trim_end_matches('/').to_string(),
             http,
@@ -74,29 +67,23 @@ impl LunarToolsBuilder {
 
 #[derive(Serialize)]
 struct Envelope<'a, T: Serialize> {
-    client_id: &'a str,
     api_key: &'a str,
     #[serde(flatten)]
     options: &'a T,
 }
 
 impl LunarTools {
-    pub fn new(client_id: impl Into<String>) -> Result<Self> {
-        Self::builder(client_id).build()
+    pub fn new() -> Result<Self> {
+        Self::builder().build()
     }
 
-    pub fn builder(client_id: impl Into<String>) -> LunarToolsBuilder {
+    pub fn builder() -> LunarToolsBuilder {
         LunarToolsBuilder {
-            client_id: client_id.into(),
             base_url: DEFAULT_BASE_URL.to_string(),
             webhook_base_url: DEFAULT_WEBHOOK_BASE_URL.to_string(),
             timeout: DEFAULT_TIMEOUT,
             http: None,
         }
-    }
-
-    pub fn client_id(&self) -> &str {
-        &self.client_id
     }
 
     pub async fn solve(&self, api_key: &str, options: &SolveOptions) -> Result<SolveResult> {
@@ -107,11 +94,7 @@ impl LunarTools {
 
         self.post(
             &format!("{}/solve", self.base_url),
-            &Envelope {
-                client_id: &self.client_id,
-                api_key,
-                options,
-            },
+            &Envelope { api_key, options },
         )
         .await
     }
@@ -122,11 +105,7 @@ impl LunarTools {
 
         self.post(
             &format!("{}/imap", self.base_url),
-            &Envelope {
-                client_id: &self.client_id,
-                api_key,
-                options,
-            },
+            &Envelope { api_key, options },
         )
         .await
     }
@@ -138,11 +117,7 @@ impl LunarTools {
 
         self.post(
             &format!("{}/imap", self.base_url),
-            &Envelope {
-                client_id: &self.client_id,
-                api_key,
-                options,
-            },
+            &Envelope { api_key, options },
         )
         .await
     }
