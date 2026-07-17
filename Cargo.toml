@@ -1,0 +1,25 @@
+[package]
+name = "lunartools-rs"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+description = "SDK for the LunarTools remote APIs: captcha solving, inbox OTP retrieval, and Discord webhook forwarding."
+readme = "README.md"
+repository = "https://github.com/lunaraio/lunartools-rs"
+homepage = "https://github.com/lunaraio/lunartools-rs"
+keywords = ["lunartools", "captcha", "otp", "imap", "webhook"]
+categories = ["api-bindings", "web-programming::http-client"]
+
+[lib]
+name = "lunartools"
+path = "src/lib.rs"
+
+[dependencies]
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "2.0"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
